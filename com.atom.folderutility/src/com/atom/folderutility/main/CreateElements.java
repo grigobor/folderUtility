@@ -1,5 +1,6 @@
 package com.atom.folderutility.main;
 
+import java.io.IOException;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -8,21 +9,16 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
-import com.teamcenter.rac.kernel.TCComponent;
-import com.teamcenter.rac.kernel.TCComponentFolder;
-import com.teamcenter.rac.kernel.TCException;
-import com.atom.folderutility.functions.Functions;
 import com.teamcenter.rac.aif.kernel.AIFComponentContext;
-import java.io.IOException;
-
-
+import com.teamcenter.rac.kernel.*;
 import com.atom.folderutility.connection.*;
+import com.atom.folderutility.functions.*;
 
-public class LoadElement extends AbstractHandler {
-
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
-    	System.out.println("Load Element plugin selected");
+public class CreateElements extends AbstractHandler {
+	
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+    	System.out.println("Create Elements plugin selected");
     	
     	//Getting the selected item from the active window
     	ISelection selection = HandlerUtil.getCurrentSelection(event); 
@@ -59,36 +55,34 @@ public class LoadElement extends AbstractHandler {
         System.out.println("Window open");
         FileDialog fileDialog = new FileDialog(shell);
         String filePath = fileDialog.open();
+        TCComponent newItem;
         if (filePath != null) {
         	System.out.println("File Selected: " + filePath);
         	try {
         		String [][] elements = Functions.processFileMass(filePath);
-        		if (elements[0].length == 2) {
-            		for (int i = 0; i < elements.length; i += 1) {
-            			TCComponent itemRevision = Functions.findItemRevisonById(Connection.getSession(), elements[i][0], elements[i][1]);
-            			if (itemRevision != null) {
-            	        	targetFolder.add("contents", itemRevision); 
-            	            System.out.println(itemRevision.toString() + " moved to " + targetFolder.toString());
-            	        } else {
-            	        	//Returns a search error depending on the object being searched for
-            	        	System.out.println("Item:  " + elements[i][0] + "/" + elements[i][1] + " not found");
-            	        }
-            		}
-        		} else if (elements[0].length == 1) {
-        			for (int i = 0; i < elements.length; i += 1) {
-            			TCComponent item = Functions.findItemById(Connection.getSession(), elements[i][0]);
-            			if (item != null) {
-            	        	targetFolder.add("contents", item); 
-            	            System.out.println(item.toString() + " moved to " + targetFolder.toString());
-            	        } else {
-            	        	//Returns a search error depending on the object being searched for
-            	        	System.out.println("Item: " + elements[i][0] + " not found");
-            	        }
-            		}
-        		} else {
-        			System.out.println("Invalid file format");
+        		TCSession session = Connection.getSession();
+        		for (int i = 0; i < elements.length; i+= 1) {
+        			TCComponent findItem = Functions.findItemById(Connection.getSession(), elements[i][0]);
+        			if (findItem == null) {
+        				TCComponentItemType itemTypeComponent = (TCComponentItemType)session.getTypeComponent(elements[i][2]);
+        	    		newItem = itemTypeComponent.create(elements[i][0], elements[i][1], elements[i][2], elements[i][3], "", new TCComponent());       				
+        	    		targetFolder.add("contents", newItem);
+        	    		for (int j = 4; j < elements[i].length; j += 2) {
+        	    			System.out.println("Seting attribute to" + elements[i][0]);
+        	    			String attributeName = elements[i][j];
+			                String newValue = elements[i][j+1];
+			                try {
+			                	newItem.setProperty(attributeName, newValue);
+			                    System.out.println("Attribute " + attributeName + " of item " + elements[i][0] + " changed to " + newValue);
+			                } catch (TCException e) {
+			                    System.err.println("Error updating attribute " + attributeName + " for item " + elements[i][0] + ": " + e.getMessage());
+			                }
+        	    		}
+        			}
+        			else {
+        				System.out.println("Item " + findItem + " already exist in Teamcenter.");
+        			}
         		}
-
         	} catch (IOException | TCException e) {
 				e.printStackTrace();
 			}

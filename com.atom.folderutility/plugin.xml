@@ -21,6 +21,11 @@
             id="com.atom.folderutility.commands.loadelements">
       </command>
       
+      <command categoryId="com.atom.folderutility.commands.category"
+            name="%atomAdminCreateElements.name"
+            id="com.atom.folderutility.commands.createelements">
+      </command>
+      
    </extension>
    
    <extension point="org.eclipse.ui.handlers">
@@ -37,6 +42,11 @@
       <handler
             class="com.atom.folderutility.main.LoadElement"
             commandId="com.atom.folderutility.commands.loadelements">
+      </handler>
+      
+      <handler
+            class="com.atom.folderutility.main.CreateElements"
+            commandId="com.atom.folderutility.commands.createelements">
       </handler>
       
    </extension>
@@ -63,6 +73,13 @@
             sequence="M1+8">
       </key>
       
+      <key
+            commandId="com.atom.folderutility.commands.createelements"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+9">
+      </key>
+      
    </extension>
    
    <extension point="org.eclipse.ui.menus">
@@ -82,6 +99,12 @@
             
             <command
                   commandId="com.atom.folderutility.commands.loadelements"
+                  id="com.atom.folderutility.menus.changeid"
+                  mnemonic="I">
+            </command>
+            
+            <command
+                  commandId="com.atom.folderutility.commands.createelements"
                   id="com.atom.folderutility.menus.changeid"
                   mnemonic="I">
             </command>

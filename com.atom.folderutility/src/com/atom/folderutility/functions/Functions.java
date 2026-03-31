@@ -30,7 +30,7 @@ public class Functions{
 				//}
 				//i += 1;
 			}
-			System.out.println("Строки преобразованы и добавлены в массив");
+			System.out.println("The strings have been converted and added to the array.");
 			return attributes.toArray(new String[0][]);
 		} catch (IOException e) {
 			e.printStackTrace();
