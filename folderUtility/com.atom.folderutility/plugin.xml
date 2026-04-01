@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension point="org.eclipse.ui.commands">
+      <category id="com.atom.folderutility.commands.category" name="%atomAdminUtils.name">
+      </category>
+      
+      <command categoryId="com.atom.folderutility.commands.category"
+            name="%atomAdminCreateElements.name"
+            id="com.atom.folderutility.commands.createelements">
+      </command>
+      
+      <command categoryId="com.atom.folderutility.commands.category"
+            name="%atomAdminChangeItemAtribute.name"
+            id="com.atom.folderutility.commands.folderutility">
+      </command>
+      
+      <command categoryId="com.atom.folderutility.commands.category"
+            name="%atomAdminLoadElements.name"
+            id="com.atom.folderutility.commands.loadelements">
+      </command>
+      
+      <command categoryId="com.atom.folderutility.commands.category"
+            name="%atomAdminChangeItemID.name"
+            id="com.atom.folderutility.commands.changeid">
+      </command>
+      
+      
+   </extension>
+   
+   <extension point="org.eclipse.ui.handlers">
+      <handler
+            class="com.atom.folderutility.main.CreateElements"
+            commandId="com.atom.folderutility.commands.createelements">
+      </handler>
+   
+      <handler
+            class="com.atom.folderutility.main.ChangeAttrHandler"
+            commandId="com.atom.folderutility.commands.folderutility">
+      </handler>
+      
+      <handler
+            class="com.atom.folderutility.main.LoadElement"
+            commandId="com.atom.folderutility.commands.loadelements">
+      </handler>
+      
+      <handler
+            class="com.atom.folderutility.main.ChangeId"
+            commandId="com.atom.folderutility.commands.changeid">
+      </handler>
+      
+      
+   </extension>
+   
+   <extension point="org.eclipse.ui.bindings">
+      <key
+            commandId="com.atom.folderutility.commands.createelements"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+9">
+      </key>
+      
+      <key
+            commandId="com.atom.folderutility.commands.folderutility"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+6">
+      </key>
+      
+      <key
+            commandId="com.atom.folderutility.commands.loadelements"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+8">
+      </key>
+      
+      <key
+            commandId="com.atom.folderutility.commands.changeid"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+7">
+      </key>
+      
+   </extension>
+   
+   <extension point="org.eclipse.ui.menus">
+      <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu id="com.atom.folderutility.menus.folderutility" label="%atomAdminCommand.label" mnemonic="M">
+            <command
+                  commandId="com.atom.folderutility.commands.createelements"
+                  id="com.atom.folderutility.menus.folderutility"
+                  mnemonic="S">
+            </command>
+            
+            <command 
+            		commandId="com.atom.folderutility.commands.folderutility" 
+            		id="com.atom.folderutility.menus.folderutility" 
+            		mnemonic="S">
+            </command>
+            
+            <command
+                  commandId="com.atom.folderutility.commands.loadelements"
+                  id="com.atom.folderutility.menus.folderutility"
+                  mnemonic="S">
+            </command>
+            
+            <command
+                  commandId="com.atom.folderutility.commands.changeid"
+                  id="com.atom.folderutility.menus.folderutility"
+                  mnemonic="S">
+            </command>
+            
+            <visibleWhen checkEnabled="false">
+	               <reference
+	                  definitionId="com.teamcenter.rac.ui.inMainPerspective"/>
+            </visibleWhen>
+         </menu>
+      </menuContribution>
+   </extension>
+
+</plugin>
