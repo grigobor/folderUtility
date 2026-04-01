@@ -1,1 +1,0 @@
-This utility called "folderUtility" is for Teamcenter users and administrator. Can help with working a lot of files by changing attributes, loading a lot of elements to folder and creating (in progress) elements with special attributes.
