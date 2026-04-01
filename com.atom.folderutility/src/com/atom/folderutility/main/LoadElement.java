@@ -3,11 +3,16 @@ package com.atom.folderutility.main;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.statushandlers.StatusManager;
+
 import com.teamcenter.rac.kernel.TCComponent;
 import com.teamcenter.rac.kernel.TCComponentFolder;
 import com.teamcenter.rac.kernel.TCException;
@@ -22,7 +27,7 @@ public class LoadElement extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-    	System.out.println("Load Element plugin selected");
+    	Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
     	
     	//Getting the selected item from the active window
     	ISelection selection = HandlerUtil.getCurrentSelection(event); 
@@ -36,7 +41,9 @@ public class LoadElement extends AbstractHandler {
 		Object selectedObject = ((IStructuredSelection) selection).getFirstElement(); 
 		
 		//Checks that the selected element is a TCComponent
-		if (!(selectedObject instanceof AIFComponentContext)) {  
+		if (!(selectedObject instanceof AIFComponentContext)) {
+			String errorMessage = "The selected item is not TCComponent";
+			MessageDialog.openError(shell, "Load Item error", errorMessage);
 			System.out.println("The selected item is not TCComponent");
 			return null;
 		}
@@ -52,11 +59,12 @@ public class LoadElement extends AbstractHandler {
             targetFolder = (TCComponentFolder) selectedComponent;
         } else {
             System.out.println("The selected item is not folder.");
+            String errorMessage = "The selected item is not folder.";
+			MessageDialog.openError(shell, "Load Item error", errorMessage);
             return null;
         }
         //Opening the file picker to upload items
-        Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
-        System.out.println("Window open");
+        // Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
         FileDialog fileDialog = new FileDialog(shell);
         String filePath = fileDialog.open();
         if (filePath != null) {
@@ -86,10 +94,14 @@ public class LoadElement extends AbstractHandler {
             	        }
             		}
         		} else {
+        			String errorMessage = "Invalid file format";
+					MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
         			System.out.println("Invalid file format");
         		}
 
         	} catch (IOException | TCException e) {
+        		IStatus status = new Status(IStatus.ERROR, "CreateElements", "Error while changing elements attributes", e);
+        		StatusManager.getManager().handle(status, StatusManager.SHOW | StatusManager.LOG);
 				e.printStackTrace();
 			}
         }

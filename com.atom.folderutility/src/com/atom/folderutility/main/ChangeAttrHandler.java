@@ -5,9 +5,13 @@ import java.io.IOException;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 import com.teamcenter.rac.kernel.TCComponent;
 import com.teamcenter.rac.kernel.TCException;
@@ -46,6 +50,8 @@ public class ChangeAttrHandler extends AbstractHandler {
 				                }
 				            }
 				        } else {
+				        	String errorMessage = "Item with ID " + attributesValues[i][0] + " not found.";
+							MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
 				            System.out.println("Item with ID " + attributesValues[i][0] + " not found.");
 				        }	
 					}
@@ -68,9 +74,13 @@ public class ChangeAttrHandler extends AbstractHandler {
 				        }	
 					}
 				} else {
+					String errorMessage = "Invalid file format";
+					MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
 					System.out.println("Invalid file format");
 				}
 			} catch (IOException | TCException e) {
+				IStatus status = new Status(IStatus.ERROR, "CreateElements", "Error while changing elements attributes", e);
+        		StatusManager.getManager().handle(status, StatusManager.SHOW | StatusManager.LOG);
 				e.printStackTrace();
 			}
 		} 

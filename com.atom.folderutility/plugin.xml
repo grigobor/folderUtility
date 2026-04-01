@@ -7,13 +7,13 @@
       </category>
       
       <command categoryId="com.atom.folderutility.commands.category"
-            name="%atomAdminChangeItemAtribute.name"
-            id="com.atom.folderutility.commands.folderutility">
+            name="%atomAdminCreateElements.name"
+            id="com.atom.folderutility.commands.createelements">
       </command>
       
       <command categoryId="com.atom.folderutility.commands.category"
-            name="%atomAdminChangeItemID.name"
-            id="com.atom.folderutility.commands.changeid">
+            name="%atomAdminChangeItemAtribute.name"
+            id="com.atom.folderutility.commands.folderutility">
       </command>
       
       <command categoryId="com.atom.folderutility.commands.category"
@@ -22,21 +22,22 @@
       </command>
       
       <command categoryId="com.atom.folderutility.commands.category"
-            name="%atomAdminCreateElements.name"
-            id="com.atom.folderutility.commands.createelements">
+            name="%atomAdminChangeItemID.name"
+            id="com.atom.folderutility.commands.changeid">
       </command>
+      
       
    </extension>
    
    <extension point="org.eclipse.ui.handlers">
       <handler
+            class="com.atom.folderutility.main.CreateElements"
+            commandId="com.atom.folderutility.commands.createelements">
+      </handler>
+   
+      <handler
             class="com.atom.folderutility.main.ChangeAttrHandler"
             commandId="com.atom.folderutility.commands.folderutility">
-      </handler>
-      
-      <handler
-            class="com.atom.folderutility.main.ChangeId"
-            commandId="com.atom.folderutility.commands.changeid">
       </handler>
       
       <handler
@@ -45,25 +46,26 @@
       </handler>
       
       <handler
-            class="com.atom.folderutility.main.CreateElements"
-            commandId="com.atom.folderutility.commands.createelements">
+            class="com.atom.folderutility.main.ChangeId"
+            commandId="com.atom.folderutility.commands.changeid">
       </handler>
+      
       
    </extension>
    
    <extension point="org.eclipse.ui.bindings">
       <key
+            commandId="com.atom.folderutility.commands.createelements"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+9">
+      </key>
+      
+      <key
             commandId="com.atom.folderutility.commands.folderutility"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             contextId="org.eclipse.ui.contexts.window"
             sequence="M1+6">
-      </key>
-      
-      <key
-            commandId="com.atom.folderutility.commands.changeid"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            contextId="org.eclipse.ui.contexts.window"
-            sequence="M1+7">
       </key>
       
       <key
@@ -74,10 +76,10 @@
       </key>
       
       <key
-            commandId="com.atom.folderutility.commands.createelements"
+            commandId="com.atom.folderutility.commands.changeid"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             contextId="org.eclipse.ui.contexts.window"
-            sequence="M1+9">
+            sequence="M1+7">
       </key>
       
    </extension>
@@ -85,6 +87,12 @@
    <extension point="org.eclipse.ui.menus">
       <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu id="com.atom.folderutility.menus.folderutility" label="%atomAdminCommand.label" mnemonic="M">
+            <command
+                  commandId="com.atom.folderutility.commands.createelements"
+                  id="com.atom.folderutility.menus.folderutility"
+                  mnemonic="S">
+            </command>
+            
             <command 
             		commandId="com.atom.folderutility.commands.folderutility" 
             		id="com.atom.folderutility.menus.folderutility" 
@@ -92,21 +100,15 @@
             </command>
             
             <command
-                  commandId="com.atom.folderutility.commands.changeid"
-                  id="com.atom.folderutility.menus.changeid"
-                  mnemonic="I">
-            </command>
-            
-            <command
                   commandId="com.atom.folderutility.commands.loadelements"
-                  id="com.atom.folderutility.menus.changeid"
-                  mnemonic="I">
+                  id="com.atom.folderutility.menus.folderutility"
+                  mnemonic="S">
             </command>
             
             <command
-                  commandId="com.atom.folderutility.commands.createelements"
-                  id="com.atom.folderutility.menus.changeid"
-                  mnemonic="I">
+                  commandId="com.atom.folderutility.commands.changeid"
+                  id="com.atom.folderutility.menus.folderutility"
+                  mnemonic="S">
             </command>
             
             <visibleWhen checkEnabled="false">

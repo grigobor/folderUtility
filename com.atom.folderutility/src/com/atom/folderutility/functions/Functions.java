@@ -8,6 +8,14 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+
 import com.teamcenter.rac.kernel.TCComponent;
 import com.teamcenter.rac.kernel.TCComponentQuery;
 import com.teamcenter.rac.kernel.TCComponentQueryType;
@@ -80,5 +88,36 @@ public class Functions{
         	System.out.println("No Item with id " + itemId + " exist in the database");
 	    	return null;
     	}
+    }
+    
+    public void showErrorDialog(Display display, String errorText) {
+    	//Display display = Display.getDefault();
+        Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+        shell.setText("Message");
+        shell.setLayout(new GridLayout(1, false));
+        //shell.setSize(300, 150);
+        
+        //Error text
+        //new Label(shell, SWT.NONE).setText(errorText);
+        Label label = new Label(shell, SWT.NONE);
+        label.setText(errorText);
+        label.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+        
+        //Button "OK"
+        Button okButton = new Button(shell, SWT.PUSH);
+        okButton.setText("OK");
+        okButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+        
+        //Action on clicking "OK"
+        okButton.addListener(SWT.Selection, e -> shell.close());
+        
+        shell.pack();
+        shell.open();
+        
+        while (!shell.isDisposed()) {
+        	if (!display.readAndDispatch()) {
+        		display.sleep();
+        	}
+        }
     }
 }
