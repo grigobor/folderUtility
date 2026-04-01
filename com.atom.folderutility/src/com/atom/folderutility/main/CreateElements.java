@@ -18,7 +18,6 @@ public class CreateElements extends AbstractHandler {
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-    	System.out.println("Create Elements plugin selected");
     	
     	//Getting the selected item from the active window
     	ISelection selection = HandlerUtil.getCurrentSelection(event); 
@@ -52,12 +51,10 @@ public class CreateElements extends AbstractHandler {
         }
         //Opening the file picker to upload items
         Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
-        System.out.println("Window open");
         FileDialog fileDialog = new FileDialog(shell);
         String filePath = fileDialog.open();
         TCComponent newItem;
         if (filePath != null) {
-        	System.out.println("File Selected: " + filePath);
         	try {
         		String [][] elements = Functions.processFileMass(filePath);
         		TCSession session = Connection.getSession();
@@ -67,12 +64,13 @@ public class CreateElements extends AbstractHandler {
         				TCComponentItemType itemTypeComponent = (TCComponentItemType)session.getTypeComponent(elements[i][2]);
         	    		newItem = itemTypeComponent.create(elements[i][0], elements[i][1], elements[i][2], elements[i][3], "", new TCComponent());       				
         	    		targetFolder.add("contents", newItem);
+        	    		TCComponent newItemRevision = Functions.findItemRevisonById(Connection.getSession(), elements[i][0], elements[i][1]);
         	    		for (int j = 4; j < elements[i].length; j += 2) {
-        	    			System.out.println("Seting attribute to" + elements[i][0]);
+        	    			System.out.println("Seting attribute to" + elements[i][0] + "/" + elements[i][1]);
         	    			String attributeName = elements[i][j];
 			                String newValue = elements[i][j+1];
 			                try {
-			                	newItem.setProperty(attributeName, newValue);
+			                	newItemRevision.setProperty(attributeName, newValue);
 			                    System.out.println("Attribute " + attributeName + " of item " + elements[i][0] + " changed to " + newValue);
 			                } catch (TCException e) {
 			                    System.err.println("Error updating attribute " + attributeName + " for item " + elements[i][0] + ": " + e.getMessage());
@@ -84,6 +82,7 @@ public class CreateElements extends AbstractHandler {
         			}
         		}
         	} catch (IOException | TCException e) {
+        		System.out.println("Error while creating elements and setting attributes.");
 				e.printStackTrace();
 			}
         }
