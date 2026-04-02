@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -18,12 +19,16 @@ import com.atom.folderutility.connection.*;
 import com.atom.folderutility.functions.*;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.ui.statushandlers.StatusManager;
 
 public class CreateElements extends AbstractHandler {
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		
+		String pluginId = "com.atom.folderutility.main.createelements";
+		MultiStatus multiStatus = new MultiStatus(pluginId, IStatus.OK, "Some items were not processed. Click 'Details' for more information.", null);
     	
 		Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
 		
@@ -86,16 +91,18 @@ public class CreateElements extends AbstractHandler {
 			                	newItemRevision.setProperty(attributeName, newValue);
 			                    System.out.println("Attribute " + attributeName + " of item " + elements[i][0] + " changed to " + newValue);
 			                } catch (TCException e) {
-			                	String errorMessage = "Error updating attribute " + attributeName + " for item " + elements[i][0] + ": " + e.getMessage();
-		        				MessageDialog.openError(shell, "Create Item error", errorMessage);
-			                    System.err.println("Error updating attribute " + attributeName + " for item " + elements[i][0] + ": " + e.getMessage());
+			                	multiStatus.add(new Status(IStatus.WARNING, pluginId, "Error updating attribute " + attributeName + " for item " + elements[i][0]));
+			                	// String errorMessage = "Error updating attribute " + attributeName + " for item " + elements[i][0] + ": " + e.getMessage();
+		        				// MessageDialog.openError(shell, "Create Item error", errorMessage);
+			                    // System.err.println("Error updating attribute " + attributeName + " for item " + elements[i][0] + ": " + e.getMessage());
 			                }
         	    		}
         			}
         			else {
-        				String errorMessage = "Item " + findItem + " already exist in Teamcenter.";
-        				MessageDialog.openError(shell, "Create Item error", errorMessage);
-        				System.out.println("Item " + findItem + " already exist in Teamcenter.");
+        				multiStatus.add(new Status(IStatus.WARNING, pluginId, "Item with ID " + elements[i][0] + " already exist in Teamcenter."));
+        				// String errorMessage = "Item " + findItem + " already exist in Teamcenter.";
+        				// MessageDialog.openError(shell, "Create Item error", errorMessage);
+        				// System.out.println("Item " + findItem + " already exist in Teamcenter.");
         			}
         		}
         	} catch (IOException | TCException e) {
@@ -108,6 +115,9 @@ public class CreateElements extends AbstractHandler {
         	String errorMessage = "File not selected";
 			MessageDialog.openError(shell, "Create Item error", errorMessage);
         	System.out.println("File not selected");
+        }
+        if (multiStatus.getSeverity() != IStatus.OK) {
+            ErrorDialog.openError(shell, "Progress Report", "Attention! Some items were skipped.", multiStatus);
         }
 		return null;
     }

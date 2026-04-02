@@ -5,7 +5,9 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.FileDialog;
@@ -27,6 +29,10 @@ public class LoadElement extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
+    	
+    	String pluginId = "com.atom.folderutility.main.loadelements";
+		MultiStatus multiStatus = new MultiStatus(pluginId, IStatus.OK, "Some items were not processed. Click 'Details' for more information.", null);
+    	
     	Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
     	
     	//Getting the selected item from the active window
@@ -79,7 +85,8 @@ public class LoadElement extends AbstractHandler {
             	            System.out.println(itemRevision.toString() + " moved to " + targetFolder.toString());
             	        } else {
             	        	//Returns a search error depending on the object being searched for
-            	        	System.out.println("Item:  " + elements[i][0] + "/" + elements[i][1] + " not found");
+            	        	multiStatus.add(new Status(IStatus.ERROR, pluginId, "Item:  " + elements[i][0] + "/" + elements[i][1] + " not found"));
+            	        	// System.out.println("Item:  " + elements[i][0] + "/" + elements[i][1] + " not found");
             	        }
             		}
         		} else if (elements[0].length == 1) {
@@ -90,7 +97,8 @@ public class LoadElement extends AbstractHandler {
             	            System.out.println(item.toString() + " moved to " + targetFolder.toString());
             	        } else {
             	        	//Returns a search error depending on the object being searched for
-            	        	System.out.println("Item: " + elements[i][0] + " not found");
+            	        	multiStatus.add(new Status(IStatus.ERROR, pluginId, "Item:  " + elements[i][0] + "/" + elements[i][1] + " not found"));
+            	        	// System.out.println("Item: " + elements[i][0] + " not found");
             	        }
             		}
         		} else {
@@ -104,6 +112,9 @@ public class LoadElement extends AbstractHandler {
         		StatusManager.getManager().handle(status, StatusManager.SHOW | StatusManager.LOG);
 				e.printStackTrace();
 			}
+        }
+        if (multiStatus.getSeverity() != IStatus.OK) {
+            ErrorDialog.openError(shell, "Progress Report", "Attention! Some items were skipped.", multiStatus);
         }
 		return null;
     }

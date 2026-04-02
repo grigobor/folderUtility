@@ -7,6 +7,8 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -23,6 +25,10 @@ import com.atom.folderutility.connection.*;
 public class ChangeAttrHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		
+		String pluginId = "com.atom.folderutility.main.changeattrhandler";
+		MultiStatus multiStatus = new MultiStatus(pluginId, IStatus.OK, "Some items were not processed. Click 'Details' for more information.", null);
+		
         Shell shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
         FileDialog fileDialog = new FileDialog(shell);
         String filePath = fileDialog.open();
@@ -46,13 +52,15 @@ public class ChangeAttrHandler extends AbstractHandler {
 				                    item.setProperty(attributeName, newValue);
 				                    System.out.println("Attribute " + attributeName + " of item " + attributesValues[i][0] + " changed to " + newValue);
 				                } catch (TCException e) {
-				                    System.err.println("Error updating attribute " + attributeName + " for item " + attributesValues[i][0] + ": " + e.getMessage());
+				                	multiStatus.add(new Status(IStatus.ERROR, pluginId, "Error updating attribute " + attributeName + " for item " + attributesValues[i][0]));
+				                    // System.err.println("Error updating attribute " + attributeName + " for item " + attributesValues[i][0] + ": " + e.getMessage());
 				                }
 				            }
 				        } else {
-				        	String errorMessage = "Item with ID " + attributesValues[i][0] + " not found.";
-							MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
-				            System.out.println("Item with ID " + attributesValues[i][0] + " not found.");
+				        	multiStatus.add(new Status(IStatus.WARNING, pluginId, "Item with ID " + attributesValues[i][0] + " not found."));
+				        	// String errorMessage = "Item with ID " + attributesValues[i][0] + " not found.";
+							// MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
+				            // System.out.println("Item with ID " + attributesValues[i][0] + " not found.");
 				        }	
 					}
 				} else if (attributesValues[0].length >= 3 & attributesValues[0].length % 2 == 1) {
@@ -66,11 +74,13 @@ public class ChangeAttrHandler extends AbstractHandler {
 				                    item.setProperty(attributeName, newValue);
 				                    System.out.println("Attribute " + attributeName + " of item " + attributesValues[i][0] + " changed to " + newValue);
 				                } catch (TCException e) {
-				                    System.err.println("Error updating attribute " + attributeName + " for item " + attributesValues[i][0] + ": " + e.getMessage());
+				                	multiStatus.add(new Status(IStatus.ERROR, pluginId, "Error updating attribute " + attributeName + " for item " + attributesValues[i][0]));
+				                    // System.err.println("Error updating attribute " + attributeName + " for item " + attributesValues[i][0] + ": " + e.getMessage());
 				                }
 				            }
 				        } else {
-				            System.out.println("Item with ID " + attributesValues[i][0] + " not found.");
+				        	multiStatus.add(new Status(IStatus.WARNING, pluginId, "Item with ID " + attributesValues[i][0] + " not found."));
+				            // System.out.println("Item with ID " + attributesValues[i][0] + " not found.");
 				        }	
 					}
 				} else {
@@ -83,7 +93,13 @@ public class ChangeAttrHandler extends AbstractHandler {
         		StatusManager.getManager().handle(status, StatusManager.SHOW | StatusManager.LOG);
 				e.printStackTrace();
 			}
-		} 
+		} else {
+			String errorMessage = "File not selected";
+			MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
+		}
+        if (multiStatus.getSeverity() != IStatus.OK) {
+            ErrorDialog.openError(shell, "Progress Report", "Attention! Some items were skipped.", multiStatus);
+        }
         return null;
     }
 }
