@@ -41,6 +41,54 @@ public class ChangeAttrHandler extends AbstractHandler {
         if (filePath != null) {
         	try {
 				String [][] attributesValues = Functions.processFileMass(filePath);
+				for (int i = 0; i < attributesValues.length; i += 1) {
+					if (attributesValues[i].length >= 4 & attributesValues[0].length % 2 == 0) {
+						TCComponent item = Functions.findItemRevisonById(session, attributesValues[i][0], attributesValues[i][1]);
+						if (item != null) {
+				            for (int j = 2; j < attributesValues[i].length; j += 2) {
+				                String attributeName = attributesValues[i][j];
+				                String newValue = attributesValues[i][j+1];
+				                try {
+				                    item.setProperty(attributeName, newValue);
+				                    System.out.println("Attribute " + attributeName + " of item " + attributesValues[i][0] + " changed to " + newValue);
+				                } catch (TCException e) {
+				                	multiStatus.add(new Status(IStatus.ERROR, pluginId, "Error updating attribute " + attributeName + " for item " + attributesValues[i][0]));
+				                    // System.err.println("Error updating attribute " + attributeName + " for item " + attributesValues[i][0] + ": " + e.getMessage());
+				                }
+				            }
+				        } else {
+				        	multiStatus.add(new Status(IStatus.WARNING, pluginId, "Item with ID " + attributesValues[i][0] + " not found."));
+				        	// String errorMessage = "Item with ID " + attributesValues[i][0] + " not found.";
+							// MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
+				            // System.out.println("Item with ID " + attributesValues[i][0] + " not found.");
+				        }
+					} else if (attributesValues[i].length >= 3 & attributesValues[0].length % 2 == 1) {
+						TCComponent item = Functions.findItemById(session, attributesValues[i][0]);
+						if (item != null) {
+				            for (int j = 1; j < attributesValues[i].length; j += 2) {
+				                String attributeName = attributesValues[i][j];
+				                String newValue = attributesValues[i][j+1];
+				                try {
+				                    item.setProperty(attributeName, newValue);
+				                    System.out.println("Attribute " + attributeName + " of item " + attributesValues[i][0] + " changed to " + newValue);
+				                } catch (TCException e) {
+				                	multiStatus.add(new Status(IStatus.ERROR, pluginId, "Error updating attribute " + attributeName + " for item " + attributesValues[i][0]));
+				                    // System.err.println("Error updating attribute " + attributeName + " for item " + attributesValues[i][0] + ": " + e.getMessage());
+				                }
+				            }
+				        } else {
+				        	multiStatus.add(new Status(IStatus.WARNING, pluginId, "Item with ID " + attributesValues[i][0] + " not found."));
+				            // System.out.println("Item with ID " + attributesValues[i][0] + " not found.");
+				        }
+					} else {
+						multiStatus.add(new Status(IStatus.WARNING, pluginId, "Invalid line format of line: " + (i+1)));
+						/*String errorMessage = "Invalid file format";
+						MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
+						System.out.println("Invalid file format");*/
+					}
+				}
+				
+				/*
 				if (attributesValues[0].length >= 4 & attributesValues[0].length % 2 == 0) {
 					for (int i = 0; i < attributesValues.length; i += 1) {
 						TCComponent item = Functions.findItemRevisonById(session, attributesValues[i][0], attributesValues[i][1]);
@@ -87,7 +135,7 @@ public class ChangeAttrHandler extends AbstractHandler {
 					String errorMessage = "Invalid file format";
 					MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
 					System.out.println("Invalid file format");
-				}
+				}*/
 			} catch (IOException | TCException e) {
 				IStatus status = new Status(IStatus.ERROR, "CreateElements", "Error while changing elements attributes", e);
         		StatusManager.getManager().handle(status, StatusManager.SHOW | StatusManager.LOG);

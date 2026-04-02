@@ -77,7 +77,36 @@ public class LoadElement extends AbstractHandler {
         	System.out.println("File Selected: " + filePath);
         	try {
         		String [][] elements = Functions.processFileMass(filePath);
-        		if (elements[0].length == 2) {
+        		for (int i = 0; i < elements.length; i += 1) {
+        			if (elements[i].length == 2) {
+        				TCComponent itemRevision = Functions.findItemRevisonById(Connection.getSession(), elements[i][0], elements[i][1]);
+            			if (itemRevision != null) {
+            	        	targetFolder.add("contents", itemRevision); 
+            	            System.out.println(itemRevision.toString() + " moved to " + targetFolder.toString());
+            	        } else {
+            	        	//Returns a search error depending on the object being searched for
+            	        	multiStatus.add(new Status(IStatus.ERROR, pluginId, "Item:  " + elements[i][0] + "/" + elements[i][1] + " not found"));
+            	        	// System.out.println("Item:  " + elements[i][0] + "/" + elements[i][1] + " not found");
+            	        }
+        			} else if (elements[i].length == 1) {
+        				TCComponent item = Functions.findItemById(Connection.getSession(), elements[i][0]);
+            			if (item != null) {
+            	        	targetFolder.add("contents", item); 
+            	            System.out.println(item.toString() + " moved to " + targetFolder.toString());
+            	        } else {
+            	        	//Returns a search error depending on the object being searched for
+            	        	multiStatus.add(new Status(IStatus.ERROR, pluginId, "Item:  " + elements[i][0] + "/" + elements[i][1] + " not found"));
+            	        	// System.out.println("Item: " + elements[i][0] + " not found");
+            	        }
+        			} else {
+        				String errorMessage = "Invalid file format";
+    					MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
+            			System.out.println("Invalid file format");
+        			}
+        		}
+        		
+        		
+        		/* if (elements[0].length == 2) {
             		for (int i = 0; i < elements.length; i += 1) {
             			TCComponent itemRevision = Functions.findItemRevisonById(Connection.getSession(), elements[i][0], elements[i][1]);
             			if (itemRevision != null) {
@@ -105,7 +134,7 @@ public class LoadElement extends AbstractHandler {
         			String errorMessage = "Invalid file format";
 					MessageDialog.openError(shell, "Change Item Attributes Error", errorMessage);
         			System.out.println("Invalid file format");
-        		}
+        		} */
 
         	} catch (IOException | TCException e) {
         		IStatus status = new Status(IStatus.ERROR, "CreateElements", "Error while changing elements attributes", e);
